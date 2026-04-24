@@ -7,6 +7,6 @@ public class Movement2D : MonoBehaviour
 
    public void Move(Vector2 Pdirection)
    {
-      rb.linearVelocity = Pdirection * movementSpeed;
+      rb.linearVelocity = new Vector2(Pdirection.x * movementSpeed, rb.linearVelocityY);
    }
 }
