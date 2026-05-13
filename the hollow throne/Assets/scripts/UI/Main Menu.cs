@@ -6,7 +6,7 @@ public class MainMenu : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("Main Game");
+        SceneManager.LoadScene(2);
     }
 
     public void LoadGame()
@@ -15,7 +15,7 @@ public class MainMenu : MonoBehaviour
     }
     public void opensettings()
     {
-        // Implement settings functionality here
+       SceneManager.LoadScene(1);
     }
 
     public void QuitGame()
