@@ -8,4 +8,18 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadScene("Main Game");
     }
+
+    public void LoadGame()
+    {
+        // Implement load game functionality here
+    }
+    public void opensettings()
+    {
+        // Implement settings functionality here
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 }
