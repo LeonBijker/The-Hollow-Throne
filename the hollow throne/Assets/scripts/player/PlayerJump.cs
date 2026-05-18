@@ -11,7 +11,7 @@ public class PlayerJump : MonoBehaviour, IJumping
   {
     if (Pcanjump && IsGrounded())
     {
-      rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+      rb.linearVelocity = new Vector2(rb.linearVelocityX, 0);
       rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }
   }

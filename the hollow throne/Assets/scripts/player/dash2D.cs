@@ -28,7 +28,7 @@ public class dash2D : MonoBehaviour
         if (isDashing && Time.time >= dashTime)
         {
             isDashing = false;
-            rb.linearVelocity = new Vector2(rb.linearVelocityX, rb.linearVelocity.y); // Stop horizontal dash, keep vertical speed
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y); // Stop horizontal dash, keep vertical speed
         }
     }
 }
