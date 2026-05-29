@@ -270,8 +270,8 @@ GameObject:
   - component: {fileID: 1064864335}
   - component: {fileID: 1064864334}
   - component: {fileID: 1064864333}
-  - component: {fileID: 1064864332}
   - component: {fileID: 1064864338}
+  - component: {fileID: 1064864332}
   - component: {fileID: 1064864341}
   - component: {fileID: 1064864340}
   m_Layer: 0
@@ -466,9 +466,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42b473c74368eb4eaac1564eb35061a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::keyboardinput
-  Left: 97
-  Right: 100
-  Up: 32
+  left: 97
+  right: 100
+  jump: 32
   dash: 119
 --- !u!114 &1064864340
 MonoBehaviour:
@@ -496,12 +496,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb84e506da874a27a70ef8f2aea20e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoubleJump
-  jumpForce: 7.5
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
+  jumpForce: 5
   groundcheck: {fileID: 1239035569}
-  jumpCount: 0
 --- !u!1 &1239035567
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,7 +524,7 @@ Transform:
   m_GameObject: {fileID: 1239035567}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.032, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

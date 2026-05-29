@@ -1,47 +1,46 @@
 using UnityEngine;
 
-public class keyboardinput : MonoBehaviour
+public class KeyboardInput : MonoBehaviour, Iinput
 {
-  [SerializeField] KeyCode Left = KeyCode.A;
-  [SerializeField] KeyCode Right = KeyCode.D;
-  [SerializeField] KeyCode Up = KeyCode.Space;
-  [SerializeField] KeyCode dash = KeyCode.W;
-  
-  Vector2 direction;
-  Vector2 lastFacingDirection = Vector2.right;
-  
-  public Vector2 getinput()
-  {
-    if (Input.GetKey(Left))
-    {
-      direction.x = -1;
-      lastFacingDirection = Vector2.left;
-    }
-    else if (Input.GetKey(Right))
-    {
-      direction.x = 1;
-      lastFacingDirection = Vector2.right;
-    }
-    else
-    {
-      direction.x = 0;
-    }
-    return direction;
-  }
+    [SerializeField] KeyCode left = KeyCode.A;
+    [SerializeField] KeyCode right = KeyCode.D;
+    [SerializeField] KeyCode jump = KeyCode.Space;
+    [SerializeField] KeyCode dash = KeyCode.W;
 
-  public bool getJumpInput()
-  {
-    return Input.GetKeyDown(Up);
-  }
+    private Vector2 lastFacingDirection = Vector2.right;
 
-  public bool getDashInput()
-  {
-    return Input.GetKeyDown(dash);
-  }
+    public Vector2 GetMovementInput()
+    {
+        Vector2 currentInput = Vector2.zero;
 
-  public Vector2 getLastFacingDirection()
-  {
-    return lastFacingDirection;
-  }
-  
+        if (Input.GetKey(left))
+        {
+            currentInput.x = -1;
+            lastFacingDirection = Vector2.left;
+        }
+        else if (Input.GetKey(right))
+        {
+            currentInput.x = 1;
+            lastFacingDirection = Vector2.right;
+        }
+
+        return currentInput == Vector2.zero
+            ? currentInput
+            : currentInput.normalized;
+    }
+
+    public bool GetJumpInput()
+    {
+        return Input.GetKeyDown(jump);
+    }
+
+    public bool GetDashInput()
+    {
+        return Input.GetKeyDown(dash);
+    }
+
+    public Vector2 GetLastFacingDirection()
+    {
+        return lastFacingDirection;
+    }
 }

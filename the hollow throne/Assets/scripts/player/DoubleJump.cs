@@ -2,13 +2,21 @@ using UnityEngine;
 
 public class DoubleJump : MonoBehaviour, IJumping
 {
-    private Rigidbody2D rb => GetComponent<Rigidbody2D>();
-    [SerializeField] float jumpForce = 5f;
-    [SerializeField] LayerMask groundLayer;
+    private Rigidbody2D rb;
+
+    [SerializeField] private float jumpForce = 5f;
+
     [SerializeField] private BoxCollider2D groundcheck;
 
-    [SerializeField] private int jumpCount = 0;
+    private int jumpCount = 0;
     private const int maxJumps = 2;
+
+    private bool isGrounded;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
 
     public void Jump(bool canJump)
     {
@@ -17,24 +25,28 @@ public class DoubleJump : MonoBehaviour, IJumping
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             jumpCount++;
-            print(jumpCount);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("ground"))
+        {
+            isGrounded = true;
+            jumpCount = 0;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("ground"))
+        {
+            isGrounded = false;
         }
     }
 
     public bool IsGrounded()
     {
-        if (groundcheck == null) return false;
-        bool grounded = Physics2D.OverlapBox(groundcheck.bounds.center, groundcheck.bounds.size, 0, groundLayer);
-        if (grounded) jumpCount = 0; // Reset jumps when landing
-        return grounded;
-    }
-
-    private void FixedUpdate()
-    {
-        // Continuously check ground to reset jump count when landing
-        if (IsGrounded() && jumpCount > 0)
-        {
-            jumpCount = 0;
-        }
+        return isGrounded;
     }
 }

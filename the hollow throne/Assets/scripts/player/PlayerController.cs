@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     Movement2D movement2D => GetComponent<Movement2D>();
-    keyboardinput keyboardinput => GetComponent<keyboardinput>();
+    Iinput input => GetComponent<Iinput>();
     IJumping jumping => GetComponent<IJumping>();
     dash2D dash2D => GetComponent<dash2D>();
 
@@ -12,14 +12,14 @@ public class PlayerController : MonoBehaviour
     {
         if (!dash2D.IsDashing())
         {
-            movement2D.Move(keyboardinput.getinput());
+            movement2D.Move(input.GetMovementInput());
         }
-        
-        jumping.Jump(keyboardinput.getJumpInput());
-        
-        if (keyboardinput.getDashInput())
+
+        jumping.Jump(input.GetJumpInput());
+
+        if (input.GetDashInput())
         {
-            dash2D.Dash(keyboardinput.getLastFacingDirection());
+            dash2D.Dash(input.GetLastFacingDirection());
         }
     }
 }
