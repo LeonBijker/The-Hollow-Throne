@@ -2,24 +2,44 @@ using UnityEngine;
 
 public class PlayerJump : MonoBehaviour, IJumping
 {
-  private Rigidbody2D rb => GetComponent<Rigidbody2D>();
-  [SerializeField] float jumpForce = 5f;
+    private Rigidbody2D rb;
 
-  [SerializeField] private BoxCollider2D groundcheck;
+    [SerializeField] float jumpForce = 5f;
 
-  public void Jump(bool Pcanjump)
-  {
-    if (Pcanjump && IsGrounded())
+    private bool isGrounded;
+
+    private void Awake()
     {
-      rb.linearVelocity = new Vector2(rb.linearVelocityX, 0);
-      rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        rb = GetComponent<Rigidbody2D>();
     }
-  }
 
-  public bool IsGrounded()
-  {
-    if (groundcheck == null) return false;
-    return Physics2D.OverlapBox(groundcheck.bounds.center, groundcheck.bounds.size, 0);
-  }
-  
+    public void Jump(bool Pcanjump)
+    {
+        if (Pcanjump && isGrounded)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("ground"))
+        {
+            isGrounded = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("ground"))
+        {
+            isGrounded = false;
+        }
+    }
+
+    public bool IsGrounded()
+    {
+        return isGrounded;
+    }
 }

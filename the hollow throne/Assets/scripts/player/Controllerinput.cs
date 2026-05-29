@@ -1,32 +1,55 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ControllerInput : MonoBehaviour, Iinput
 {
-    [SerializeField] string horizontalAxis = "Horizontal";
-    [SerializeField] string jumpButton = "Jump";
-    [SerializeField] string dashButton = "Fire3";
-
-    private Vector2 direction;
     private Vector2 lastFacingDirection = Vector2.right;
+
+    [SerializeField] private bool debugInput = true;
 
     public Vector2 GetMovementInput()
     {
-        Vector2 currentinput = Vector2.zero;
+        if (Gamepad.current == null)
+            return Vector2.zero;
 
-        currentinput.x = Input.GetAxis("Horizontal");
-        currentinput.y = Input.GetAxis("Vertical");
+        Vector2 input = Gamepad.current.leftStick.ReadValue();
+        Vector2 dpad = Gamepad.current.dpad.ReadValue();
 
-        return currentinput == Vector2.zero ? currentinput : currentinput.normalized;
+        Vector2 finalInput = input + dpad;
+
+        if (finalInput.magnitude < 0.1f)
+            finalInput = Vector2.zero;
+
+        if (finalInput != Vector2.zero)
+            lastFacingDirection = finalInput.normalized;
+
+        return finalInput;
     }
 
     public bool GetJumpInput()
     {
-        return Input.GetButtonDown(jumpButton);
+        if (Gamepad.current == null)
+            return false;
+
+        bool pressed = Gamepad.current.buttonSouth.wasPressedThisFrame;
+
+        if (debugInput && pressed)
+            Debug.Log("JUMP pressed (A button)");
+
+        return pressed;
     }
 
     public bool GetDashInput()
     {
-        return Input.GetButtonDown(dashButton);
+        if (Gamepad.current == null)
+            return false;
+
+        bool pressed = Gamepad.current.buttonNorth.wasPressedThisFrame;
+
+        if (debugInput && pressed)
+            Debug.Log("DASH pressed (Y button)");
+
+        return pressed;
     }
 
     public Vector2 GetLastFacingDirection()

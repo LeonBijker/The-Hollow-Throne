@@ -270,9 +270,9 @@ GameObject:
   - component: {fileID: 1064864335}
   - component: {fileID: 1064864334}
   - component: {fileID: 1064864333}
+  - component: {fileID: 1064864342}
   - component: {fileID: 1064864332}
-  - component: {fileID: 1064864338}
-  - component: {fileID: 1064864341}
+  - component: {fileID: 1064864343}
   - component: {fileID: 1064864340}
   m_Layer: 0
   m_Name: Player
@@ -454,22 +454,6 @@ Transform:
   - {fileID: 1239035568}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1064864338
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1064864331}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d42b473c74368eb4eaac1564eb35061a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::keyboardinput
-  Left: 97
-  Right: 100
-  Up: 32
-  dash: 119
 --- !u!114 &1064864340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -484,7 +468,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::dash2D
   dashForce: 20
   dashDuration: 0.5
---- !u!114 &1064864341
+--- !u!114 &1064864342
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -493,14 +477,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1064864331}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a7efb92b7a850d4b8edfca55afc3632, type: 3}
+  m_Script: {fileID: 11500000, guid: ec5061395ee360346b6254f7d141755c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerJump
+  m_EditorClassIdentifier: Assembly-CSharp::ControllerInput
+  debugInput: 1
+--- !u!114 &1064864343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1064864331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb84e506da874a27a70ef8f2aea20e4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DoubleJump
   jumpForce: 5
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  groundcheck: {fileID: 0}
+  groundcheck: {fileID: 1239035569}
 --- !u!1 &1239035567
 GameObject:
   m_ObjectHideFlags: 0
