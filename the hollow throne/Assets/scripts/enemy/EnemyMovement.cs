@@ -1,0 +1,18 @@
+using UnityEngine;
+
+public class EnemyMovement : MonoBehaviour, IEnemyMovement
+{
+    [SerializeField] private float speed = 3f;
+
+    private Rigidbody2D rb;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    public void Move(Vector2 direction)
+    {
+        rb.linearVelocity = new Vector2(direction.x * speed, rb.linearVelocity.y);
+    }
+}

@@ -19,7 +19,7 @@ public class dash2D : MonoBehaviour
             isDashing = true;
             dashTime = Time.time + dashDuration;
             rb.linearVelocity = new  Vector2(direction.x * dashForce, rb.linearVelocity.y);
-            Debug.Log("Dashing in direction: " + direction);
+           
         }
     }
 
