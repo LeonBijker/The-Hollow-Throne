@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    Movement2D movement2D => GetComponent<Movement2D>();
+    IMovement movement => GetComponent<IMovement>();
     Iinput input => GetComponent<Iinput>();
     IJumping jumping => GetComponent<IJumping>();
     dash2D dash2D => GetComponent<dash2D>();
@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!dash2D.IsDashing())
         {
-            movement2D.Move(input.GetMovementInput());
+            movement.Move(input.GetMovementInput());
         }
 
         jumping.Jump(input.GetJumpInput());

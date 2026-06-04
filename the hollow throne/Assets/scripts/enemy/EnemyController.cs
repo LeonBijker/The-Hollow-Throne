@@ -3,12 +3,12 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     private IMovementInput input;
-    private IEnemyMovement movement;
+    private IMovement movement;
 
     private void Awake()
     {
         input = GetComponent<IMovementInput>();
-        movement = GetComponent<IEnemyMovement>();
+        movement = GetComponent<IMovement>();
     }
 
     private void Update()

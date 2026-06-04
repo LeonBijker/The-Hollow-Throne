@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Movement2D : MonoBehaviour
+public class Movement2D : MonoBehaviour , IMovement
 {
    private Rigidbody2D rb => GetComponent<Rigidbody2D>();
    [SerializeField] float movementSpeed = 1f;

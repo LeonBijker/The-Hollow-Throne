@@ -8,13 +8,13 @@ public class EnemyChase : MonoBehaviour
     [SerializeField] private float accelFactor = 0.5f;
     [SerializeField] private float maxMultiplier = 2f;
 
-    private IEnemyMovement movement;
+    private IMovement movement;
     private Vector3 initialScale;
     private Vector2 lastFacingDirection = Vector2.right;
 
     private void Awake()
     {
-        movement = GetComponent<IEnemyMovement>();
+        movement = GetComponent<IMovement>();
         initialScale = transform.localScale;
 
         if (player == null)

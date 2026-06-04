@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface IEnemyMovement
+public interface IMovement
 {
     void Move(Vector2 direction);
 }
