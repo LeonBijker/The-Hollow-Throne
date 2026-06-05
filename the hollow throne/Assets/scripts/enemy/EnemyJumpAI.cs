@@ -1,0 +1,95 @@
+using UnityEngine;
+
+public class EnemyJumpAI : MonoBehaviour
+{
+    [Header("Random Jump")]
+    [SerializeField] private float minRandomInterval = 2f;
+    [SerializeField] private float maxRandomInterval = 5f;
+
+    [Header("Edge Detection")]
+    [SerializeField] private float frontOffset = 0.6f;
+    [SerializeField] private float edgeCheckDistance = 0.8f;
+    [SerializeField] private LayerMask groundLayer = 1 << 6; // default to layer 6 if used for ground; adjust in inspector
+
+    private IJumping jumping;
+    private Rigidbody2D rb;
+
+    private float nextRandomTime;
+    private float randomTimer;
+
+    private void Awake()
+    {
+        jumping = GetComponent<IJumping>();
+        rb = GetComponent<Rigidbody2D>();
+        ScheduleNextRandom();
+        Debug.Log($"EnemyJumpAI Awake - IJumping found: {jumping != null}, Rigidbody2D found: {rb != null}");
+    }
+
+    private void ScheduleNextRandom()
+    {
+        nextRandomTime = Random.Range(minRandomInterval, maxRandomInterval);
+        randomTimer = 0f;
+    }
+
+    private void Update()
+    {
+        if (jumping == null) return;
+
+        randomTimer += Time.deltaTime;
+        if (randomTimer >= nextRandomTime)
+        {
+            Debug.Log($"EnemyJumpAI Random jump timer reached for {gameObject.name}. grounded={jumping.IsGrounded()}");
+            // only request a jump if grounded
+            if (jumping.IsGrounded())
+            {
+                Debug.Log($"EnemyJumpAI Requesting random jump on {gameObject.name}");
+                jumping.Jump(true);
+            }
+            ScheduleNextRandom();
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (jumping == null) return;
+
+        // only check edges when grounded
+        if (!jumping.IsGrounded()) return;
+
+        float facing = 1f;
+        if (rb != null)
+        {
+            if (Mathf.Abs(rb.linearVelocity.x) > 0.01f)
+                facing = Mathf.Sign(rb.linearVelocity.x);
+            else
+                facing = Mathf.Sign(transform.localScale.x);
+        }
+        else
+        {
+            facing = Mathf.Sign(transform.localScale.x);
+        }
+
+        // start a bit above the origin to avoid hitting the enemy's own collider
+        Vector2 origin = (Vector2)transform.position + new Vector2(frontOffset * facing, 0.2f);
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, edgeCheckDistance, groundLayer);
+        if (hit.collider == null)
+        {
+            Debug.Log($"EnemyJumpAI Edge detected for {gameObject.name} at origin {origin} - requesting jump");
+            // no ground ahead -> jump to avoid falling
+            jumping.Jump(true);
+        }
+        else
+        {
+            Debug.Log($"EnemyJumpAI Edge check hit: {hit.collider.name} for {gameObject.name}");
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        float facing = Mathf.Sign(transform.localScale.x);
+        Vector2 origin = (Vector2)transform.position + new Vector2(frontOffset * facing, 0f);
+        Gizmos.DrawLine(origin, origin + Vector2.down * edgeCheckDistance);
+        Gizmos.DrawSphere(origin, 0.05f);
+    }
+}

@@ -5,21 +5,30 @@ public class DoubleJump : MonoBehaviour, IJumping
     private Rigidbody2D rb;
 
     [SerializeField] private float jumpForce = 5f;
-
-    [SerializeField] private BoxCollider2D groundcheck;
-
-    private int jumpCount = 0;
+    private int jumpCount = 1;
     private const int maxJumps = 2;
 
     private bool isGrounded;
+    private GroundSensor groundSensor;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        groundSensor = GetComponentInChildren<GroundSensor>();
+        if (groundSensor == null)
+        {
+            // auto-add a GroundSensor so grounding works reliably
+            groundSensor = gameObject.AddComponent<GroundSensor>();
+            Debug.Log($"DoubleJump: GroundSensor was missing and has been added to '{gameObject.name}'");
+        }
     }
 
     public void Jump(bool canJump)
     {
+        // refresh grounded state from sensor
+        if (groundSensor != null)
+            isGrounded = groundSensor.IsGrounded();
+
         if (canJump && jumpCount < maxJumps)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
@@ -28,21 +37,19 @@ public class DoubleJump : MonoBehaviour, IJumping
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void FixedUpdate()
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("ground"))
-        {
-            isGrounded = true;
+        if (groundSensor != null)
+            isGrounded = groundSensor.IsGrounded();
+
+        if (isGrounded)
             jumpCount = 0;
-        }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    private void OnDrawGizmosSelected()
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("ground"))
-        {
-            isGrounded = false;
-        }
+        Gizmos.color = isGrounded ? Color.green : Color.red;
+        Gizmos.DrawWireSphere(transform.position, 0.2f);
     }
 
     public bool IsGrounded()
