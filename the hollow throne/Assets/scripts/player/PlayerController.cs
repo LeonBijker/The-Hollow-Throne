@@ -3,23 +3,56 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    IMovement movement => GetComponent<IMovement>();
-    Iinput input => GetComponent<Iinput>();
-    IJumping jumping => GetComponent<IJumping>();
-    dash2D dash2D => GetComponent<dash2D>();
+    private IMovement movement;
+    private Iinput input;
+    private IJumping jumping;
+    private dash2D dash2D;
+
+    private void Awake()
+    {
+        input = GetComponent<Iinput>();
+        dash2D = GetComponent<dash2D>();
+        movement = GetComponent<IMovement>();
+        jumping = GetComponent<IJumping>();
+    }
 
     private void Update()
     {
+        if (input == null || movement == null || dash2D == null) return;
+
         if (!dash2D.IsDashing())
         {
             movement.Move(input.GetMovementInput());
         }
 
-        jumping.Jump(input.GetJumpInput());
+        jumping?.Jump(input.GetJumpInput());
 
         if (input.GetDashInput())
         {
             dash2D.Dash(input.GetLastFacingDirection());
         }
+    }
+
+    // Swap or add a movement component at runtime. T must implement IMovement.
+    // Swap or add a jumping component at runtime. T must implement IJumping.
+    // This will remove any existing IJumping components that are not of type T.
+    public void SwapJumping<T>() where T : Component, IJumping
+    {
+        // destroy existing IJumping components that are not of the requested type
+        var monos = GetComponents<MonoBehaviour>();
+        foreach (var m in monos)
+        {
+            if (m is IJumping && !(m is T))
+            {
+                Destroy(m);
+            }
+        }
+
+        T comp = GetComponent<T>();
+        if (comp == null)
+            comp = gameObject.AddComponent<T>();
+
+        jumping = comp as IJumping;
+        Debug.Log($"PlayerController: Swapped jumping to {typeof(T).Name}");
     }
 }
