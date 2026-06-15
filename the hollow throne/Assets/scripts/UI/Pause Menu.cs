@@ -1,0 +1,65 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class PauseMenu : MonoBehaviour
+{
+    [SerializeField] private GameObject pauseMenuUI;
+
+
+    private void Start()
+    {
+        bool isPaused = GameManager.Instance != null && GameManager.Instance.State == GameState.Paused;
+        if (pauseMenuUI != null) pauseMenuUI.SetActive(isPaused);
+
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            TogglePause();
+        }
+    }
+
+    public void TogglePause()
+    {
+        if (GameManager.Instance == null) return;
+        if (GameManager.Instance.State == GameState.Paused)
+        {
+            ContinueGame();
+        }
+        else if (GameManager.Instance.State == GameState.Playing)
+        {
+            PauseGame();
+        }
+    }
+
+    public void PauseGame()
+    {
+        if (GameManager.Instance == null) return;
+        GameManager.Instance.PauseGame();
+        if (pauseMenuUI != null) pauseMenuUI.SetActive(true);
+    }
+
+    public void ContinueGame()
+    {
+        if (GameManager.Instance == null) return;
+        GameManager.Instance.ResumeGame();
+        if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
+    }
+
+    public void BackToMainMenu()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ReturnToMainMenu();
+            return;
+        }
+
+        SceneManager.LoadScene(0);
+    }
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+}

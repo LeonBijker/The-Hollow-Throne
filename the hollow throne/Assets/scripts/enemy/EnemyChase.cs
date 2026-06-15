@@ -11,11 +11,14 @@ public class EnemyChase : MonoBehaviour
     private IMovement movement;
     private Vector3 initialScale;
     private Vector2 lastFacingDirection = Vector2.right;
+    private Rigidbody2D rb;
 
     private void Awake()
     {
         movement = GetComponent<IMovement>();
         initialScale = transform.localScale;
+
+        rb = GetComponent<Rigidbody2D>();
 
         if (player == null)
         {
@@ -28,6 +31,18 @@ public class EnemyChase : MonoBehaviour
     private void FixedUpdate()
     {
         if (player == null || movement == null) return;
+
+        // suspend chasing when game is not playing
+        if (GameManager.Instance != null && GameManager.Instance.State != GameState.Playing)
+        {
+            movement.Move(Vector2.zero);
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+            }
+            return;
+        }
 
         Vector2 current = transform.position;
         Vector2 target = player.position;

@@ -11,6 +11,9 @@ public class EnemyPatrol : MonoBehaviour, IMovementInput
 
     private void Update()
     {
+        if (GameManager.Instance != null && GameManager.Instance.State != GameState.Playing)
+            return;
+
         timer += Time.deltaTime;
 
         if (timer >= moveDuration)

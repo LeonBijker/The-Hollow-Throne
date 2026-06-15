@@ -1,0 +1,59 @@
+﻿using UnityEngine;
+
+public class DoubleJump : MonoBehaviour, IJumping
+{
+    private Rigidbody2D rb;
+
+    [SerializeField] private float jumpForce = 5f;
+    private int jumpCount = 1;
+    private const int maxJumps = 2;
+
+    private bool isGrounded;
+    private GroundSensor groundSensor;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        groundSensor = GetComponentInChildren<GroundSensor>();
+        if (groundSensor == null)
+        {
+            // auto-add a GroundSensor so grounding works reliably
+            groundSensor = gameObject.AddComponent<GroundSensor>();
+            Debug.Log($"DoubleJump: GroundSensor was missing and has been added to '{gameObject.name}'");
+        }
+    }
+
+    public void Jump(bool canJump)
+    {
+        // refresh grounded state from sensor
+        if (groundSensor != null)
+            isGrounded = groundSensor.IsGrounded();
+
+        if (canJump && jumpCount < maxJumps)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            jumpCount++;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (groundSensor != null)
+            isGrounded = groundSensor.IsGrounded();
+
+        if (isGrounded)
+            jumpCount = 0;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = isGrounded ? Color.green : Color.red;
+        Gizmos.DrawWireSphere(transform.position, 0.2f);
+    }
+
+    public bool IsGrounded()
+    {
+        return isGrounded;
+    }
+}
