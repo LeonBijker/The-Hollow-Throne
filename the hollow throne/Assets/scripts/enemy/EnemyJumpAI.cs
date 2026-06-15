@@ -22,7 +22,7 @@ public class EnemyJumpAI : MonoBehaviour
         jumping = GetComponent<IJumping>();
         rb = GetComponent<Rigidbody2D>();
         ScheduleNextRandom();
-        Debug.Log($"EnemyJumpAI Awake - IJumping found: {jumping != null}, Rigidbody2D found: {rb != null}");
+      
     }
 
     private void ScheduleNextRandom()
@@ -35,14 +35,19 @@ public class EnemyJumpAI : MonoBehaviour
     {
         if (jumping == null) return;
 
+        if (GameManager.Instance != null && GameManager.Instance.State != GameState.Playing)
+        {
+            return;
+        }
+
         randomTimer += Time.deltaTime;
         if (randomTimer >= nextRandomTime)
         {
-            Debug.Log($"EnemyJumpAI Random jump timer reached for {gameObject.name}. grounded={jumping.IsGrounded()}");
+           
             // only request a jump if grounded
             if (jumping.IsGrounded())
             {
-                Debug.Log($"EnemyJumpAI Requesting random jump on {gameObject.name}");
+               
                 jumping.Jump(true);
             }
             ScheduleNextRandom();
@@ -52,6 +57,16 @@ public class EnemyJumpAI : MonoBehaviour
     private void FixedUpdate()
     {
         if (jumping == null) return;
+
+        if (GameManager.Instance != null && GameManager.Instance.State != GameState.Playing)
+        {
+            if (rb != null)
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+                rb.angularVelocity = 0f;
+            }
+            return;
+        }
 
         // only check edges when grounded
         if (!jumping.IsGrounded()) return;
@@ -74,14 +89,11 @@ public class EnemyJumpAI : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, edgeCheckDistance, groundLayer);
         if (hit.collider == null)
         {
-            Debug.Log($"EnemyJumpAI Edge detected for {gameObject.name} at origin {origin} - requesting jump");
+           
             // no ground ahead -> jump to avoid falling
             jumping.Jump(true);
         }
-        else
-        {
-            Debug.Log($"EnemyJumpAI Edge check hit: {hit.collider.name} for {gameObject.name}");
-        }
+     
     }
 
     private void OnDrawGizmosSelected()

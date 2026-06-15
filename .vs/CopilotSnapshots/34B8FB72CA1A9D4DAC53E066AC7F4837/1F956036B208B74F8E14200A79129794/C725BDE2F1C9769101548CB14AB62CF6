@@ -1,0 +1,25 @@
+﻿using System;
+using UnityEngine;
+
+public class PlayerController : MonoBehaviour
+{
+    IMovement movement => GetComponent<IMovement>();
+    Iinput input => GetComponent<Iinput>();
+    IJumping jumping => GetComponent<IJumping>();
+    dash2D dash2D => GetComponent<dash2D>();
+
+    private void Update()
+    {
+        if (!dash2D.IsDashing())
+        {
+            movement.Move(input.GetMovementInput());
+        }
+
+        jumping.Jump(input.GetJumpInput());
+
+        if (input.GetDashInput())
+        {
+            dash2D.Dash(input.GetLastFacingDirection());
+        }
+    }
+}

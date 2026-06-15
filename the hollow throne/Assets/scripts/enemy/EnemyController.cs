@@ -5,30 +5,59 @@ public class EnemyController : MonoBehaviour
     private IMovementInput input;
     private IMovement movement;
     private IJumping jumping;
+    private bool enabledForGameplay = false;
+    private Rigidbody2D rb;
 
     private void Awake()
     {
         input = GetComponent<IMovementInput>();
         movement = GetComponent<IMovement>();
         jumping = GetComponent<IJumping>();
-        Debug.Log($"EnemyController Awake - IMovementInput: {input != null}, IMovement: {movement != null}, IJumping: {jumping != null}");
+        // cache Rigidbody2D and initialize enabledForGameplay based on current GameState (if GameManager exists)
+        rb = GetComponent<Rigidbody2D>();
+        if (GameManager.Instance != null)
+            enabledForGameplay = GameManager.Instance.State == GameState.Playing;
     }
 
     private void Update()
     {
+        if (!enabledForGameplay) return;
+
         if (input == null || movement == null) return;
 
         Vector2 direction = input.GetDirection();
         movement.Move(direction);
-        Debug.Log($"EnemyController Update - direction={direction}");
 
         if (jumping != null)
         {
             // use vertical component of movement input as jump intent
             bool wantsToJump = direction.y > 0.1f;
             bool canJump = jumping.IsGrounded() && wantsToJump;
-            Debug.Log($"EnemyController Jump check - wantsToJump={wantsToJump}, isGrounded={jumping.IsGrounded()}, willJump={canJump}");
             jumping.Jump(canJump);
+        }
+
+        }
+
+    private void OnEnable()
+    {
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnGameStateChanged += OnGameStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnGameStateChanged -= OnGameStateChanged;
+    }
+
+    private void OnGameStateChanged(GameState state)
+    {
+        enabledForGameplay = state == GameState.Playing;
+        // if we are no longer playing (paused or other), stop all physical movement immediately
+        if (!enabledForGameplay && rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
         }
     }
 }
