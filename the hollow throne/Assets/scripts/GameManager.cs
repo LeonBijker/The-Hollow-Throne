@@ -19,28 +19,53 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        // ensure timeScale is at default when GameManager is created
+        UnityEngine.Time.timeScale = 1f;
+        // cache the original fixedDeltaTime so we can restore it after pausing
+        originalFixedDeltaTime = UnityEngine.Time.fixedDeltaTime;
     }
 
     public void StartGame()
     {
+        // ensure timeScale is normal when starting gameplay
+        UnityEngine.Time.timeScale = 1f;
+        UnityEngine.Time.fixedDeltaTime = originalFixedDeltaTime;
         SetState(GameState.Playing);
         // ensure scene 2 is loaded for gameplay
         UnityEngine.SceneManagement.SceneManager.LoadScene(2);
     }
 
+    public void PauseGame()
+    {
+        if (State == GameState.Paused) return;
+        SetState(GameState.Paused);
+        UnityEngine.Time.timeScale = 0f;
+        UnityEngine.Time.fixedDeltaTime = 0f;
+    }
+
+    public void ResumeGame()
+    {
+        if (State == GameState.Playing) return;
+        UnityEngine.Time.timeScale = 1f;
+        UnityEngine.Time.fixedDeltaTime = originalFixedDeltaTime;
+        SetState(GameState.Playing);
+    }
+
     public void EndGame()
     {
-        SetState(GameState.Playing);
-        {
         SetState(GameState.GameOver);
-    }
     }
 
     public void ReturnToMainMenu()
     {
+        // make sure timeScale is reset before switching scenes
+        UnityEngine.Time.timeScale = 1f;
+        UnityEngine.Time.fixedDeltaTime = originalFixedDeltaTime;
         SetState(GameState.MainMenu);
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
+
+    private float originalFixedDeltaTime = 0.02f;
 
     private void SetState(GameState newState)
     {
