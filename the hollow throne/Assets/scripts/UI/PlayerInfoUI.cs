@@ -85,8 +85,8 @@ public class PlayerInfoUI : MonoBehaviour
         if (GameManager.Instance != null)
         {
             var active = SceneManager.GetActiveScene();
-            // if we're already in the gameplay scene (build index 2), resume; otherwise start (loads scene 2)
-            if (active.buildIndex == 2)
+            // gameplay scene is build index 1 in this project; if we're already in gameplay, ResumeGame, otherwise StartGame
+            if (active.buildIndex == 1)
                 GameManager.Instance.ResumeGame();
             else
                 GameManager.Instance.StartGame();

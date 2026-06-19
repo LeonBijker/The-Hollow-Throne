@@ -9,6 +9,7 @@ public class SaveData
     public float playerX;
     public float playerY;
     public bool doubleJumpUnlocked;
+    public string[] completedGoals;
     public string savedAt;
 }
 
@@ -61,6 +62,34 @@ public static class SaveSystem
         {
             Debug.LogError($"SaveSystem: failed to load - {ex}");
             return null;
+        }
+    }
+
+    public static string[] GetCompletedGoals()
+    {
+        var d = Load();
+        if (d == null || d.completedGoals == null) return new string[0];
+        return d.completedGoals;
+    }
+
+    public static bool HasCompletedGoal(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return false;
+        var list = GetCompletedGoals();
+        foreach (var g in list) if (g == id) return true;
+        return false;
+    }
+
+    public static void AddCompletedGoal(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return;
+        var d = Load() ?? new SaveData { sceneBuildIndex = 0, playerX = 0f, playerY = 0f, doubleJumpUnlocked = false };
+        var list = d.completedGoals != null ? new System.Collections.Generic.List<string>(d.completedGoals) : new System.Collections.Generic.List<string>();
+        if (!list.Contains(id))
+        {
+            list.Add(id);
+            d.completedGoals = list.ToArray();
+            Save(d);
         }
     }
 

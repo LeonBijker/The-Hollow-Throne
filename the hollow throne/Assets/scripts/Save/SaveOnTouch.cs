@@ -55,6 +55,11 @@ public class SaveOnTouch : MonoBehaviour
             playerY = playerPos.y
         };
 
+        // preserve existing completed goals if present
+        var existing = SaveSystem.Load();
+        if (existing != null && existing.completedGoals != null)
+            data.completedGoals = existing.completedGoals;
+
         // detect whether player currently has DoubleJump component and save that state
         var hasDoubleJump = other.GetComponent<DoubleJump>() != null;
         data.doubleJumpUnlocked = hasDoubleJump;
