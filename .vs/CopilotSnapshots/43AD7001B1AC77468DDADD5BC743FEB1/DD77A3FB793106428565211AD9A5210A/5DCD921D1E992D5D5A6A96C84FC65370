@@ -1,5 +1,4 @@
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
@@ -24,21 +23,12 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(2);
     }
 
     public void LoadGame()
     {
-        var data = SaveSystem.Load();
-        if (data == null)
-        {
-            Debug.Log("MainMenu: no save found to load");
-            return;
-        }
-
-        // queue the save so GameManager can apply it after scene loads
-        SaveSystem.PendingLoad = data;
-        SceneManager.LoadScene(data.sceneBuildIndex);
+        // Implement load game functionality here
     }
 
     public void opensettings()

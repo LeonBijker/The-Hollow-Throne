@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
         UnityEngine.Time.fixedDeltaTime = originalFixedDeltaTime;
         SetState(GameState.Playing);
         // ensure scene 2 is loaded for gameplay
-        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(2);
     }
 
     public void PauseGame()

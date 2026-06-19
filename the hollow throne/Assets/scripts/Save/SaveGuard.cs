@@ -1,0 +1,56 @@
+using UnityEngine;
+
+/// <summary>
+/// Handles save overwrite warning and starting the game. Place this in the Main Menu scene and assign the optional UI panel.
+/// </summary>
+public class SaveGuard : MonoBehaviour
+{
+    [Tooltip("Optional UI panel shown when a save exists. Should contain confirm and cancel buttons.")]
+    [SerializeField] private GameObject overwriteWarningPanel;
+
+    void Awake()
+    {
+        if (overwriteWarningPanel != null) overwriteWarningPanel.SetActive(false);
+    }
+
+    public void RequestStartGame()
+    {
+        if (SaveSystem.HasSave())
+        {
+            if (overwriteWarningPanel != null)
+            {
+                overwriteWarningPanel.SetActive(true);
+                return;
+            }
+
+            // no UI assigned: default to showing a Debug warning and cancel to avoid accidental overwrite
+            Debug.LogWarning("SaveGuard: save exists and no overwriteWarningPanel assigned; cancelling StartGame to avoid overwrite.");
+            return;
+        }
+
+        BeginStartGame();
+    }
+
+    public void ConfirmOverwriteAndStart()
+    {
+        SaveSystem.Delete();
+        if (overwriteWarningPanel != null) overwriteWarningPanel.SetActive(false);
+        BeginStartGame();
+    }
+
+    public void CancelOverwrite()
+    {
+        if (overwriteWarningPanel != null) overwriteWarningPanel.SetActive(false);
+    }
+
+    private void BeginStartGame()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.StartGame();
+            return;
+        }
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+    }
+}

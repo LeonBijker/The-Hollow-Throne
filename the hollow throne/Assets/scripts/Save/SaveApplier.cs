@@ -1,0 +1,67 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+/// <summary>
+/// Applies pending SaveSystem.PendingLoad when the saved scene finishes loading.
+/// Restores player position and abilities (e.g., double jump).
+/// Attach to a persistent manager (e.g., the GameManager object) or any object in the scene.
+/// </summary>
+public class SaveApplier : MonoBehaviour
+{
+    private void Awake()
+    {
+        // ensure this listener persists across scenes if placed on a persistent object
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        var pending = SaveSystem.PendingLoad;
+        if (pending == null) return;
+
+        if (scene.buildIndex != pending.sceneBuildIndex) return;
+
+        var player = GameObject.Find("Player");
+        if (player != null)
+        {
+            var pos = player.transform.position;
+            player.transform.position = new Vector3(pending.playerX, pending.playerY, pos.z);
+            Debug.Log($"SaveApplier: applied saved player position ({pending.playerX},{pending.playerY})");
+
+            var pc = player.GetComponent<PlayerController>();
+            if (pc != null)
+            {
+                if (pending.doubleJumpUnlocked)
+                {
+                    pc.SwapJumping<DoubleJump>();
+                    Debug.Log("SaveApplier: restored DoubleJump ability");
+                }
+                else
+                {
+                    pc.SwapJumping<CharacterJump>();
+                    Debug.Log("SaveApplier: ensured CharacterJump (no double jump)");
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("SaveApplier: Player object not found when applying save");
+        }
+
+        // clear pending and ensure gameplay time/state via GameManager if present
+        SaveSystem.PendingLoad = null;
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ResumeGame();
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
+    }
+}

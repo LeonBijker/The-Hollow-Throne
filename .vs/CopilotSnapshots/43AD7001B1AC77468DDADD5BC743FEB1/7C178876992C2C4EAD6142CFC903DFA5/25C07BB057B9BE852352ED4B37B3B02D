@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -19,10 +19,56 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        // listen for scene loads to apply pending save data
+        SceneManager.sceneLoaded += OnSceneLoaded;
         // ensure timeScale is at default when GameManager is created
         UnityEngine.Time.timeScale = 1f;
         // cache the original fixedDeltaTime so we can restore it after pausing
         originalFixedDeltaTime = UnityEngine.Time.fixedDeltaTime;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // if there's a pending save to apply, and the loaded scene matches, restore player
+        var pending = SaveSystem.PendingLoad;
+        if (pending == null) return;
+
+        if (scene.buildIndex == pending.sceneBuildIndex)
+        {
+            var player = GameObject.Find("Player");
+            if (player != null)
+            {
+                var pos = player.transform.position;
+                player.transform.position = new Vector3(pending.playerX, pending.playerY, pos.z);
+                Debug.Log($"GameManager: applied saved player position ({pending.playerX},{pending.playerY})");
+                // restore unlocked abilities
+                var pc = player.GetComponent<PlayerController>();
+                if (pc != null)
+                {
+                    if (pending.doubleJumpUnlocked)
+                    {
+                        pc.SwapJumping<DoubleJump>();
+                        Debug.Log("GameManager: restored DoubleJump ability");
+                    }
+                    else
+                    {
+                        pc.SwapJumping<CharacterJump>();
+                        Debug.Log("GameManager: ensured CharacterJump (no double jump)");
+                    }
+                }
+            }
+
+            // clear pending and ensure gameplay state
+            SaveSystem.PendingLoad = null;
+            UnityEngine.Time.timeScale = 1f;
+            UnityEngine.Time.fixedDeltaTime = originalFixedDeltaTime;
+            SetState(GameState.Playing);
+        }
     }
 
     public void StartGame()
@@ -32,7 +78,7 @@ public class GameManager : MonoBehaviour
         UnityEngine.Time.fixedDeltaTime = originalFixedDeltaTime;
         SetState(GameState.Playing);
         // ensure scene 2 is loaded for gameplay
-        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(2);
     }
 
     public void PauseGame()

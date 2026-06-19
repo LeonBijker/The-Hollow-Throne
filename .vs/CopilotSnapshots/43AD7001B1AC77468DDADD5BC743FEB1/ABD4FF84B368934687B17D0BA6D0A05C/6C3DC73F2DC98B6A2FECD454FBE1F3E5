@@ -1,0 +1,82 @@
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+public class MainMenu : MonoBehaviour
+{
+    [Header("Overwrite Warning UI")]
+    [Tooltip("Optional UI panel shown when a save exists. Should contain confirm and cancel buttons.")]
+    [SerializeField] private GameObject overwriteWarningPanel;
+
+    void Awake()
+    {
+        if (overwriteWarningPanel != null) overwriteWarningPanel.SetActive(false);
+    }
+
+    public void StartGame()
+    {
+        // ensure timeScale is restored in case we returned from a paused state
+        UnityEngine.Time.timeScale = 1f;
+        UnityEngine.Time.fixedDeltaTime = 0.02f;
+
+        // if a save file exists, show the overwrite warning and require confirmation
+        if (SaveSystem.HasSave())
+        {
+            if (overwriteWarningPanel != null)
+            {
+                overwriteWarningPanel.SetActive(true);
+                return;
+            }
+            else
+            {
+                // no UI assigned: log and prevent accidental overwrite
+                Debug.LogWarning("MainMenu: save exists and no overwriteWarningPanel assigned; cancelling StartGame to avoid overwrite.");
+                return;
+            }
+        }
+
+        // No save exists: proceed to start
+        BeginStartGame();
+    }
+
+    // Called by the confirm button on the overwriteWarningPanel
+    public void ConfirmOverwriteAndStart()
+    {
+        // delete existing save (will be overwritten when the game saves)
+        SaveSystem.Delete();
+        if (overwriteWarningPanel != null) overwriteWarningPanel.SetActive(false);
+        BeginStartGame();
+    }
+
+    // Called by the cancel button on the overwriteWarningPanel
+    public void CancelOverwrite()
+    {
+        if (overwriteWarningPanel != null) overwriteWarningPanel.SetActive(false);
+    }
+
+    private void BeginStartGame()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.StartGame();
+            return;
+        }
+
+        // Fallback if GameManager is not present
+        UnityEngine.SceneManagement.SceneManager.LoadScene(2);
+    }
+
+    public void LoadGame()
+    {
+        // Implement load game functionality here
+    }
+
+    public void opensettings()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+}

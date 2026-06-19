@@ -17,7 +17,7 @@ public class InputSwitcher : MonoBehaviour
     private void Start()
     {
         if (playerController == null)
-            playerController = FindObjectOfType<PlayerController>();
+            playerController = FindFirstObjectByType<PlayerController>();
         if (InputDeviceDetector.Instance != null)
         {
             InputDeviceDetector.Instance.OnInputDeviceChanged += OnDeviceChanged;
