@@ -1,0 +1,86 @@
+﻿using System;
+using UnityEngine;
+
+public enum InputDeviceType { Unknown, KeyboardMouse, Controller }
+
+/// <summary>
+/// Detects whether the player is using keyboard/mouse or a controller by observing recent input.
+/// Subscribe to OnInputDeviceChanged or read CurrentDevice.
+/// Place on a GameObject in your scene (e.g. GameManager) and set DontDestroyOnLoad if needed.
+/// </summary>
+public class InputDeviceDetector : MonoBehaviour
+{
+    public static InputDeviceDetector Instance { get; private set; }
+
+    public InputDeviceType CurrentDevice { get; private set; } = InputDeviceType.Unknown;
+    public event Action<InputDeviceType> OnInputDeviceChanged;
+
+    [Tooltip("Minimum axis magnitude to consider a controller axis active")]
+    [SerializeField] private float axisThreshold = 0.5f;
+
+    // common keyboard keys to monitor (small set for performance)
+    private readonly KeyCode[] keyboardKeys = new KeyCode[]
+    {
+        KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D,
+        KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow,
+        KeyCode.Space, KeyCode.Return, KeyCode.Escape,
+        KeyCode.LeftShift, KeyCode.RightShift, KeyCode.LeftControl, KeyCode.RightControl
+    };
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+    }
+
+    void Update()
+    {
+        // check controller buttons
+        for (int i = 0; i <= 19; i++)
+        {
+            if (Input.GetKeyDown((KeyCode)((int)KeyCode.JoystickButton0 + i)))
+            {
+                SetDevice(InputDeviceType.Controller);
+                return;
+            }
+        }
+
+        // check controller axes (Horizontal/Vertical commonly mapped)
+        var h = Input.GetAxisRaw("Horizontal");
+        var v = Input.GetAxisRaw("Vertical");
+        if (Mathf.Abs(h) >= axisThreshold || Mathf.Abs(v) >= axisThreshold)
+        {
+            // if no keyboard key pressed this frame, assume controller
+            if (!AnyKeyboardOrMousePressed())
+            {
+                SetDevice(InputDeviceType.Controller);
+                return;
+            }
+        }
+
+        // check keyboard keys or mouse
+        if (AnyKeyboardOrMousePressed())
+        {
+            SetDevice(InputDeviceType.KeyboardMouse);
+            return;
+        }
+    }
+
+    private bool AnyKeyboardOrMousePressed()
+    {
+        foreach (var k in keyboardKeys)
+        {
+            if (Input.GetKeyDown(k)) return true;
+        }
+
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) return true;
+        return false;
+    }
+
+    private void SetDevice(InputDeviceType device)
+    {
+        if (CurrentDevice == device) return;
+        CurrentDevice = device;
+        OnInputDeviceChanged?.Invoke(device);
+    }
+}

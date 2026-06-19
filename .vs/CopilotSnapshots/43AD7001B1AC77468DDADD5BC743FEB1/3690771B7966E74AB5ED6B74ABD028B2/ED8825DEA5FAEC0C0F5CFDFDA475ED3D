@@ -1,0 +1,36 @@
+﻿using UnityEngine;
+using System;
+
+/// <summary>
+/// Simple bridge that listens to InputDeviceDetector and exposes the current device.
+/// It no longer adds/removes or enables input components — other scripts should handle switching.
+/// </summary>
+public class InputSwitcher : MonoBehaviour
+{
+    public InputDeviceType CurrentDevice { get; private set; } = InputDeviceType.KeyboardMouse;
+    public event Action<InputDeviceType> OnDeviceChanged;
+
+    private void Start()
+    {
+        if (InputDeviceDetector.Instance != null)
+        {
+            InputDeviceDetector.Instance.OnInputDeviceChanged += HandleDeviceChanged;
+            // mirror current device
+            HandleDeviceChanged(InputDeviceDetector.Instance.CurrentDevice);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (InputDeviceDetector.Instance != null)
+            InputDeviceDetector.Instance.OnInputDeviceChanged -= HandleDeviceChanged;
+    }
+
+    private void HandleDeviceChanged(InputDeviceType device)
+    {
+        if (CurrentDevice == device) return;
+        CurrentDevice = device;
+        OnDeviceChanged?.Invoke(device);
+        Debug.Log($"InputSwitcher: detected device change -> {device}");
+    }
+}

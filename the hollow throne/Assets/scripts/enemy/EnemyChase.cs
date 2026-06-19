@@ -22,7 +22,7 @@ public class EnemyChase : MonoBehaviour
 
         if (player == null)
         {
-            var found = GameObject.FindGameObjectWithTag("Player");
+            var found = GameObject.Find("Player");
             if (found != null)
                 player = found.transform;
         }

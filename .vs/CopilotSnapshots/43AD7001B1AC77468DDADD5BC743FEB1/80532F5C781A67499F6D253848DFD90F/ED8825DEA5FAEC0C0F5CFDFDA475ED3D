@@ -1,0 +1,62 @@
+﻿using System.Linq;
+using UnityEngine;
+
+/// <summary>
+/// Listens to InputDeviceDetector and enables/disables Iinput implementations on the player.
+/// Place in the scene (GameManager or any manager object). It will find the PlayerController and toggle components.
+/// </summary>
+public class InputSwitcher : MonoBehaviour
+{
+    [Tooltip("Optional: set to an existing PlayerController. If null, will FindObjectOfType<PlayerController>()")]
+    [SerializeField] private PlayerController playerController;
+
+    private void Start()
+    {
+        if (playerController == null)
+            playerController = FindObjectOfType<PlayerController>();
+
+        if (InputDeviceDetector.Instance != null)
+        {
+            InputDeviceDetector.Instance.OnInputDeviceChanged += OnDeviceChanged;
+            // apply current device immediately
+            ApplyDevice(InputDeviceDetector.Instance.CurrentDevice);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (InputDeviceDetector.Instance != null)
+            InputDeviceDetector.Instance.OnInputDeviceChanged -= OnDeviceChanged;
+    }
+
+    private void OnDeviceChanged(InputDeviceType device)
+    {
+        ApplyDevice(device);
+    }
+
+    private void ApplyDevice(InputDeviceType device)
+    {
+        if (playerController == null) return;
+        var go = playerController.gameObject;
+
+        if (device == InputDeviceType.Controller)
+        {
+            // ensure a ControllerInput exists
+            var ctrl = go.GetComponent<ControllerInput>();
+            if (ctrl == null) go.AddComponent<ControllerInput>();
+
+            // remove any KeyboardInput components
+            var keys = go.GetComponents<KeyboardInput>();
+            foreach (var k in keys) Destroy(k);
+        }
+        else // KeyboardMouse or Unknown -> ensure keyboard input
+        {
+            var key = go.GetComponent<KeyboardInput>();
+            if (key == null) go.AddComponent<KeyboardInput>();
+
+            // remove any ControllerInput components
+            var ctrls = go.GetComponents<ControllerInput>();
+            foreach (var c in ctrls) Destroy(c);
+        }
+    }
+}

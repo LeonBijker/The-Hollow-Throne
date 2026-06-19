@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -18,8 +18,6 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // refresh input component each frame so runtime swaps (keyboard/controller) are picked up
-        input = GetComponent<Iinput>();
         if (input == null || movement == null || dash2D == null) return;
 
         if (!dash2D.IsDashing())
