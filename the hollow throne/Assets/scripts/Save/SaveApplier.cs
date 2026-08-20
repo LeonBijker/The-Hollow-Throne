@@ -21,19 +21,19 @@ public class SaveApplier : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        var pending = SaveSystem.PendingLoad;
+        SaveData pending = SaveSystem.PendingLoad;
         if (pending == null) return;
 
         if (scene.buildIndex != pending.sceneBuildIndex) return;
 
-        var player = GameObject.Find("Player");
+        GameObject player = GameObject.Find("Player");
         if (player != null)
         {
-            var pos = player.transform.position;
+            Vector3 pos = player.transform.position;
             player.transform.position = new Vector3(pending.playerX, pending.playerY, pos.z);
             Debug.Log($"SaveApplier: applied saved player position ({pending.playerX},{pending.playerY})");
 
-            var pc = player.GetComponent<PlayerController>();
+            PlayerController pc = player.GetComponent<PlayerController>();
             if (pc != null)
             {
                 if (pending.doubleJumpUnlocked)

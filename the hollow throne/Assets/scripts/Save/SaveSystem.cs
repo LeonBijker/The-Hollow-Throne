@@ -11,6 +11,12 @@ public class SaveData
     public bool doubleJumpUnlocked;
     public string[] completedGoals;
     public string savedAt;
+
+    public SaveData()
+    {
+        completedGoals = Array.Empty<string>();
+        savedAt = string.Empty;
+    }
 }
 
 public static class SaveSystem
@@ -40,7 +46,7 @@ public static class SaveSystem
         try
         {
             data.savedAt = DateTime.UtcNow.ToString("o");
-            var json = JsonUtility.ToJson(data, prettyPrint: true);
+            string json = JsonUtility.ToJson(data, prettyPrint: true);
             File.WriteAllText(SavePath, json);
             Debug.Log($"SaveSystem: saved to {SavePath}");
         }
@@ -55,7 +61,7 @@ public static class SaveSystem
         try
         {
             if (!HasSave()) return null;
-            var json = File.ReadAllText(SavePath);
+            string json = File.ReadAllText(SavePath);
             return JsonUtility.FromJson<SaveData>(json);
         }
         catch (Exception ex)
@@ -65,26 +71,32 @@ public static class SaveSystem
         }
     }
 
+    private static SaveData LoadOrCreate()
+    {
+        SaveData d = Load();
+        if (d != null) return d;
+        return new SaveData { sceneBuildIndex = 0, playerX = 0f, playerY = 0f, doubleJumpUnlocked = false };
+    }
+
     public static string[] GetCompletedGoals()
     {
-        var d = Load();
-        if (d == null || d.completedGoals == null) return new string[0];
-        return d.completedGoals;
+        SaveData d = LoadOrCreate();
+        return d.completedGoals ?? Array.Empty<string>();
     }
 
     public static bool HasCompletedGoal(string id)
     {
         if (string.IsNullOrEmpty(id)) return false;
-        var list = GetCompletedGoals();
-        foreach (var g in list) if (g == id) return true;
+        string[] list = GetCompletedGoals();
+        foreach (string g in list) if (g == id) return true;
         return false;
     }
 
     public static void AddCompletedGoal(string id)
     {
         if (string.IsNullOrEmpty(id)) return;
-        var d = Load() ?? new SaveData { sceneBuildIndex = 0, playerX = 0f, playerY = 0f, doubleJumpUnlocked = false };
-        var list = d.completedGoals != null ? new System.Collections.Generic.List<string>(d.completedGoals) : new System.Collections.Generic.List<string>();
+        SaveData d = LoadOrCreate();
+        System.Collections.Generic.List<string> list = new System.Collections.Generic.List<string>(d.completedGoals ?? Array.Empty<string>());
         if (!list.Contains(id))
         {
             list.Add(id);

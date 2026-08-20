@@ -1,0 +1,53 @@
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class MainMenu : MonoBehaviour
+{
+    public void StartGame()
+    {
+        // ensure timeScale is restored in case we returned from a paused state
+        UnityEngine.Time.timeScale = 1f;
+        UnityEngine.Time.fixedDeltaTime = 0.02f;
+
+        // delegate start request to SaveGuard if present
+        var guard = FindFirstObjectByType<SaveGuard>();
+        if (guard != null)
+        {
+            guard.RequestStartGame();
+            return;
+        }
+
+        // fallback: no guard, start immediately
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.StartGame();
+            return;
+        }
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+    }
+
+    public void LoadGame()
+    {
+        var data = SaveSystem.Load();
+        if (data == null)
+        {
+            Debug.Log("MainMenu: no save found to load");
+            return;
+        }
+
+        // queue the save so GameManager can apply it after scene loads
+        SaveSystem.PendingLoad = data;
+        SceneManager.LoadScene(data.sceneBuildIndex);
+    }
+
+    public void opensettings()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+}

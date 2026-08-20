@@ -47,8 +47,8 @@ public class SaveOnTouch : MonoBehaviour
         // match by name "Player"
         if (other.name != "Player") return;
 
-        var playerPos = other.transform.position;
-        var data = new SaveData
+        Vector3 playerPos = other.transform.position;
+        SaveData data = new SaveData
         {
             sceneBuildIndex = SceneManager.GetActiveScene().buildIndex,
             playerX = playerPos.x,
@@ -56,12 +56,12 @@ public class SaveOnTouch : MonoBehaviour
         };
 
         // preserve existing completed goals if present
-        var existing = SaveSystem.Load();
+        SaveData existing = SaveSystem.Load();
         if (existing != null && existing.completedGoals != null)
             data.completedGoals = existing.completedGoals;
 
         // detect whether player currently has DoubleJump component and save that state
-        var hasDoubleJump = other.GetComponent<DoubleJump>() != null;
+        bool hasDoubleJump = other.GetComponent<DoubleJump>() != null;
         data.doubleJumpUnlocked = hasDoubleJump;
 
         SaveSystem.Save(data);

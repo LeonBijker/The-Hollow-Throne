@@ -53,8 +53,8 @@ public class InputDeviceDetector : MonoBehaviour
         }
 
         // check controller axes (Horizontal/Vertical commonly mapped)
-        var h = Input.GetAxisRaw("Horizontal");
-        var v = Input.GetAxisRaw("Vertical");
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
         if (Mathf.Abs(h) >= axisThreshold || Mathf.Abs(v) >= axisThreshold)
         {
             if (debugLogs) Debug.Log($"InputDeviceDetector: axis detected h={h:F2} v={v:F2}");
@@ -83,7 +83,7 @@ public class InputDeviceDetector : MonoBehaviour
             return true;
         }
 
-        foreach (var k in keyboardKeys)
+        foreach (KeyCode k in keyboardKeys)
         {
             if (Input.GetKey(k) || Input.GetKeyDown(k))
             {
@@ -95,8 +95,8 @@ public class InputDeviceDetector : MonoBehaviour
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2)) return true;
 
         // detect mouse movement as keyboard/mouse input
-        var mx = Input.GetAxisRaw("Mouse X");
-        var my = Input.GetAxisRaw("Mouse Y");
+        float mx = Input.GetAxisRaw("Mouse X");
+        float my = Input.GetAxisRaw("Mouse Y");
         if (Mathf.Abs(mx) > 0.001f || Mathf.Abs(my) > 0.001f)
         {
             if (debugLogs) Debug.Log($"InputDeviceDetector: mouse move detected mx={mx:F2} my={my:F2}");
@@ -117,7 +117,7 @@ public class InputDeviceDetector : MonoBehaviour
             return;
         }
 
-        var prev = CurrentDevice;
+        InputDeviceType prev = CurrentDevice;
         CurrentDevice = device;
         lastSwitchTime = Time.time;
         if (debugLogs) Debug.Log($"InputDeviceDetector: device changed {prev} -> {device}");

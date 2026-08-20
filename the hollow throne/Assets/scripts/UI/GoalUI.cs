@@ -33,7 +33,7 @@ public class GoalUI : MonoBehaviour
 
     private void HandleGoalCompleted(string id)
     {
-        var msg = string.IsNullOrEmpty(id) ? "Goal completed" : $"Goal completed: {id}";
+        string msg = string.IsNullOrEmpty(id) ? "Goal completed" : $"Goal completed: {id}";
         ShowMessage(msg);
     }
 

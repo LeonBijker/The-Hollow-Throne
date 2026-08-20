@@ -10,7 +10,7 @@ public class MainMenu : MonoBehaviour
         UnityEngine.Time.fixedDeltaTime = 0.02f;
 
         // delegate start request to SaveGuard if present
-        var guard = FindFirstObjectByType<SaveGuard>();
+        SaveGuard guard = FindFirstObjectByType<SaveGuard>();
         if (guard != null)
         {
             guard.RequestStartGame();
@@ -29,7 +29,7 @@ public class MainMenu : MonoBehaviour
 
     public void LoadGame()
     {
-        var data = SaveSystem.Load();
+        SaveData data = SaveSystem.Load();
         if (data == null)
         {
             Debug.Log("MainMenu: no save found to load");

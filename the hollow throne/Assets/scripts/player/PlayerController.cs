@@ -6,12 +6,12 @@ public class PlayerController : MonoBehaviour
     private IMovement movement;
     private Iinput input;
     private IJumping jumping;
-    private dash2D dash2D;
+    private PlayerDash PlayerDash;
 
     private void Awake()
     {
         input = GetComponent<Iinput>();
-        dash2D = GetComponent<dash2D>();
+        PlayerDash = GetComponent<PlayerDash>();
         movement = GetComponent<IMovement>();
         jumping = GetComponent<IJumping>();
     }
@@ -20,9 +20,9 @@ public class PlayerController : MonoBehaviour
     {
         // refresh input component each frame so runtime swaps (keyboard/controller) are picked up
         input = GetComponent<Iinput>();
-        if (input == null || movement == null || dash2D == null) return;
+        if (input == null || movement == null || PlayerDash == null) return;
 
-        if (!dash2D.IsDashing())
+        if (!PlayerDash.IsDashing())
         {
             movement.Move(input.GetMovementInput());
         }
@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviour
 
         if (input.GetDashInput())
         {
-            dash2D.Dash(input.GetLastFacingDirection());
+            PlayerDash.Dash(input.GetLastFacingDirection());
         }
     }
 
@@ -41,8 +41,8 @@ public class PlayerController : MonoBehaviour
     public void SwapJumping<T>() where T : Component, IJumping
     {
         // destroy existing IJumping components that are not of the requested type
-        var monos = GetComponents<MonoBehaviour>();
-        foreach (var m in monos)
+        MonoBehaviour[] monos = GetComponents<MonoBehaviour>();
+        foreach (MonoBehaviour m in monos)
         {
             if (m is IJumping && !(m is T))
             {

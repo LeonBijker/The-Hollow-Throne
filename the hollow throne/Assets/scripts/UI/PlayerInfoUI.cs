@@ -84,7 +84,7 @@ public class PlayerInfoUI : MonoBehaviour
         // if a GameManager exists, use it to start or resume the game depending on the current scene
         if (GameManager.Instance != null)
         {
-            var active = SceneManager.GetActiveScene();
+            UnityEngine.SceneManagement.Scene active = SceneManager.GetActiveScene();
             // gameplay scene is build index 1 in this project; if we're already in gameplay, ResumeGame, otherwise StartGame
             if (active.buildIndex == 1)
                 GameManager.Instance.ResumeGame();

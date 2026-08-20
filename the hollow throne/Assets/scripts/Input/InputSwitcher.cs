@@ -50,12 +50,12 @@ public class InputSwitcher : MonoBehaviour
             if (playerController == null) return;
         }
 
-        var go = playerController.gameObject;
+        GameObject go = playerController.gameObject;
 
         if (device == InputDeviceType.Controller)
         {
             // ensure ControllerInput exists
-            var ctrl = go.GetComponent<ControllerInput>();
+            ControllerInput ctrl = go.GetComponent<ControllerInput>();
             if (ctrl == null)
             {
                 go.AddComponent<ControllerInput>();
@@ -63,8 +63,8 @@ public class InputSwitcher : MonoBehaviour
             }
 
             // remove KeyboardInput components
-            var keys = go.GetComponents<KeyboardInput>();
-            foreach (var k in keys)
+            KeyboardInput[] keys = go.GetComponents<KeyboardInput>();
+            foreach (KeyboardInput k in keys)
             {
                 Destroy(k);
                 if (debugLogs) Debug.Log("InputSwitcher: removed KeyboardInput");
@@ -72,7 +72,7 @@ public class InputSwitcher : MonoBehaviour
         }
         else // KeyboardMouse or Unknown -> ensure keyboard input
         {
-            var key = go.GetComponent<KeyboardInput>();
+            KeyboardInput key = go.GetComponent<KeyboardInput>();
             if (key == null)
             {
                 go.AddComponent<KeyboardInput>();
@@ -80,8 +80,8 @@ public class InputSwitcher : MonoBehaviour
             }
 
             // remove ControllerInput components
-            var ctrls = go.GetComponents<ControllerInput>();
-            foreach (var c in ctrls)
+            ControllerInput[] ctrls = go.GetComponents<ControllerInput>();
+            foreach (ControllerInput c in ctrls)
             {
                 Destroy(c);
                 if (debugLogs) Debug.Log("InputSwitcher: removed ControllerInput");
