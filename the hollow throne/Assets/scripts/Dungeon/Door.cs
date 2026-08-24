@@ -47,13 +47,13 @@ public class Door : MonoBehaviour, IInteractable
         Debug.Log("Player is proceeding to the next room.");
 
         // TODO: Move player to the next room
-        if(SceneManager.GetActiveScene().buildIndex == 2)
+        if(SceneManager.GetActiveScene().buildIndex == 1)
         {
           SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
         else
         {
-            SceneManager.LoadScene(3);
+            SceneManager.LoadScene(2);
         }
     }
 
