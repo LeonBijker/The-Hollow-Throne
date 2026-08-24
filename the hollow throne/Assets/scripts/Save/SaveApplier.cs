@@ -54,11 +54,7 @@ public class SaveApplier : MonoBehaviour
         }
 
         // restore completed goals into GoalManager without triggering events
-        if (pending.completedGoals != null && pending.completedGoals.Length > 0 && GoalManager.Instance != null)
-        {
-            GoalManager.Instance.RestoreCompletedGoals(pending.completedGoals);
-            Debug.Log($"SaveApplier: restored {pending.completedGoals.Length} completed goals");
-        }
+        
 
         // clear pending and ensure gameplay time/state via GameManager if present
         SaveSystem.PendingLoad = null;

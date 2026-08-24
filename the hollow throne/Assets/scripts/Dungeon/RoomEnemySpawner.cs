@@ -21,6 +21,11 @@ public class RoomEnemySpawner : MonoBehaviour
     private void Awake()
     {
         roomEnemyTracker = GetComponent<RoomEnemyTracker>();
+
+        if (roomEnemyTracker == null)
+        {
+            Debug.LogError("RoomEnemyTracker is missing from this room.", this);
+        }
     }
 
     private void Start()
@@ -30,24 +35,40 @@ public class RoomEnemySpawner : MonoBehaviour
 
     private void SpawnRoom()
     {
-        if (Random.value <= miniBossChance)
+        if (roomEnemyTracker == null)
+            return;
+
+        if (spawnPoints == null || spawnPoints.Length == 0)
         {
-            SpawnMiniBoss();
+            Debug.LogWarning("No spawn points assigned. Room will be considered clear.", this);
+            roomEnemyTracker.SpawningFinished();
             return;
         }
 
-        int enemyAmount = Random.Range(minEnemies, maxEnemies + 1);
-
-        for (int i = 0; i < enemyAmount; i++)
+        if (Random.value <= miniBossChance && miniBossPrefab != null)
         {
-            SpawnRandomEnemy();
+            SpawnMiniBoss();
         }
+        else
+        {
+            int enemyAmount = Random.Range(minEnemies, maxEnemies + 1);
+
+            for (int i = 0; i < enemyAmount; i++)
+            {
+                SpawnRandomEnemy();
+            }
+        }
+
+        roomEnemyTracker.SpawningFinished();
     }
 
     private void SpawnRandomEnemy()
     {
-        if (enemyPrefabs.Length == 0)
+        if (enemyPrefabs == null || enemyPrefabs.Length == 0)
+        {
+            Debug.LogWarning("No normal enemy prefabs assigned.", this);
             return;
+        }
 
         GameObject enemyPrefab =
             enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
@@ -67,12 +88,22 @@ public class RoomEnemySpawner : MonoBehaviour
         {
             roomEnemyTracker.RegisterEnemy(enemyHealth);
         }
+        else
+        {
+            Debug.LogWarning(
+                $"Spawned enemy '{enemy.name}' has no Health component.",
+                enemy
+            );
+        }
     }
 
     private void SpawnMiniBoss()
     {
         if (miniBossPrefab == null)
+        {
+            Debug.LogWarning("Mini boss prefab is not assigned.", this);
             return;
+        }
 
         Transform spawnPoint =
             spawnPoints[Random.Range(0, spawnPoints.Length)];
@@ -88,6 +119,13 @@ public class RoomEnemySpawner : MonoBehaviour
         if (miniBossHealth != null)
         {
             roomEnemyTracker.RegisterEnemy(miniBossHealth);
+        }
+        else
+        {
+            Debug.LogWarning(
+                $"Mini boss '{miniBoss.name}' has no Health component.",
+                miniBoss
+            );
         }
     }
 }

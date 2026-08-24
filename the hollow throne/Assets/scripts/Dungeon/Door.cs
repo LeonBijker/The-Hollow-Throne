@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Door : MonoBehaviour, IInteractable
 {
     private RoomEnemyTracker roomEnemyTracker;
 
-    private bool canProceed;
+    [SerializeField] private bool canProceed;
 
     private void Awake()
     {
@@ -16,6 +17,7 @@ public class Door : MonoBehaviour, IInteractable
         if (roomEnemyTracker != null)
         {
             roomEnemyTracker.OnRoomCleared += Proceed;
+            Debug.Log("Door is waiting for the room to be cleared.");
         }
     }
 
@@ -45,5 +47,18 @@ public class Door : MonoBehaviour, IInteractable
         Debug.Log("Player is proceeding to the next room.");
 
         // TODO: Move player to the next room
+        if(SceneManager.GetActiveScene().buildIndex == 2)
+        {
+          SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        }
+        else
+        {
+            SceneManager.LoadScene(3);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Interact(collision.gameObject);
     }
 }
